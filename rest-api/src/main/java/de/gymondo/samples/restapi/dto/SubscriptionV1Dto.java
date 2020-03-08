@@ -6,6 +6,8 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import de.gymondo.samples.commons.builder.FluentBuilder;
 
+import java.time.LocalDate;
+
 /**
  * Data Transfer Object for subscription information.
  *
@@ -15,10 +17,12 @@ import de.gymondo.samples.commons.builder.FluentBuilder;
 public class SubscriptionV1Dto implements Dto {
     private final Integer id;
     private final String name;
+    private final String expiration;
 
     public SubscriptionV1Dto(Builder builder) {
         this.id = builder.id;
         this.name = builder.name;
+        this.expiration = builder.expiration;
     }
 
     public Integer getId() {
@@ -29,13 +33,15 @@ public class SubscriptionV1Dto implements Dto {
         return name;
     }
 
+    public String getExpiration() { return expiration; }
+
     public static Builder builder() {
         return new Builder();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, name);
+        return Objects.hashCode(id, name, expiration);
     }
 
     @Override
@@ -47,9 +53,9 @@ public class SubscriptionV1Dto implements Dto {
             return false;
         }
         final SubscriptionV1Dto other = (SubscriptionV1Dto) obj;
-        return Objects.equal(this.id, other.id) &&
-                Objects.equal(this.name, other.name)
-                ;
+        return Objects.equal(this.id, other.id)
+                && Objects.equal(this.name, other.name)
+                && Objects.equal(this.expiration, other.expiration);
     }
 
     @Override
@@ -64,6 +70,7 @@ public class SubscriptionV1Dto implements Dto {
     public static class Builder implements FluentBuilder<SubscriptionV1Dto> {
         private Integer id;
         private String name;
+        private String expiration;
 
         public Builder withName(String name) {
             this.name = name;
@@ -73,6 +80,12 @@ public class SubscriptionV1Dto implements Dto {
 
         public Builder withId(Integer id) {
             this.id = id;
+
+            return this;
+        }
+
+        public Builder withExpiration(LocalDate expiration) {
+            this.expiration = expiration.toString();
 
             return this;
         }

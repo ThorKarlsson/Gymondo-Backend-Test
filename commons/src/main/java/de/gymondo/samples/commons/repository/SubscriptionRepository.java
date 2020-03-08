@@ -5,9 +5,11 @@ import com.google.common.collect.ImmutableMap;
 import de.gymondo.samples.commons.entity.Subscription;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Simplified subscription repository.
@@ -27,6 +29,28 @@ public class SubscriptionRepository {
      */
     public List<Subscription> findByUserId(Integer userId) {
         return Optional.ofNullable(SUBSCRIPTIONS.get(userId)).orElse(ImmutableList.of());
+    }
+
+    /**
+     * Gets all subscriptions
+     *
+     * @return Map of User Id -> List of subscriptions
+     */
+    public Map<Integer, List<Subscription>> findAll() {
+        return SUBSCRIPTIONS;
+    }
+
+    /**
+     * Returns list of subscriptions that are valid on specified date
+     *
+     * @param date on which subscriptions should be valid
+     * @return List of subscriptions
+     */
+    public List<Subscription> findValidOn(LocalDate date) {
+        return SUBSCRIPTIONS.values().stream()
+                .flatMap(Collection::stream)
+                .filter(x -> x.getExpiration().isAfter(date))
+                .collect(Collectors.toList());
     }
 
     // DATA. User Id -> List of subscriptions.

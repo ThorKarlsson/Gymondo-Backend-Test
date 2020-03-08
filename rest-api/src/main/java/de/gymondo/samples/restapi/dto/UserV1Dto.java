@@ -5,6 +5,10 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import de.gymondo.samples.commons.builder.FluentBuilder;
+import de.gymondo.samples.commons.entity.Subscription;
+import de.gymondo.samples.restapi.transformation.TransformationsV1;
+
+import java.util.List;
 
 /**
  * Data Transfer Object for user information.
@@ -19,12 +23,14 @@ public class UserV1Dto implements Dto {
     private final String name;
     private final Integer age;
     private final String gender;
+    private final List<SubscriptionV1Dto> subscriptions;
 
     public UserV1Dto(Builder builder) {
         this.id = builder.id;
         this.name = builder.name;
         this.age = builder.age;
         this.gender = builder.gender;
+        this.subscriptions = builder.subscriptions;
     }
 
     public Integer getId() {
@@ -43,13 +49,15 @@ public class UserV1Dto implements Dto {
         return gender;
     }
 
+    public List<SubscriptionV1Dto> getSubscriptions() { return subscriptions; }
+
     public static Builder builder() {
         return new Builder();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, name, age, gender);
+        return Objects.hashCode(id, name, age, gender, subscriptions);
     }
 
     @Override
@@ -65,7 +73,7 @@ public class UserV1Dto implements Dto {
                 && Objects.equal(this.name, other.name)
                 && Objects.equal(this.age, other.age)
                 && Objects.equal(this.gender, other.gender)
-                ;
+                && Objects.equal(this.subscriptions, other.subscriptions);
     }
 
     @Override
@@ -75,6 +83,7 @@ public class UserV1Dto implements Dto {
                 .add("name", name)
                 .add("age", age)
                 .add("gender", gender)
+                .add("subscriptions", subscriptions)
                 .toString();
     }
 
@@ -84,6 +93,7 @@ public class UserV1Dto implements Dto {
         private String name;
         private Integer age;
         private String gender;
+        private List<SubscriptionV1Dto> subscriptions;
 
         public Builder withName(String name) {
             this.name = name;
@@ -105,6 +115,12 @@ public class UserV1Dto implements Dto {
 
         public Builder withGender(String gender) {
             this.gender = gender;
+
+            return this;
+        }
+
+        public Builder withSubscriptions(List<SubscriptionV1Dto> subscriptions) {
+            this.subscriptions = subscriptions;
 
             return this;
         }

@@ -2,14 +2,15 @@ package de.gymondo.samples.restapi.controller;
 
 import de.gymondo.samples.commons.repository.SubscriptionRepository;
 import de.gymondo.samples.commons.repository.UserRepository;
+import de.gymondo.samples.restapi.dto.SubscriptionV1Dto;
 import de.gymondo.samples.restapi.dto.UserV1Dto;
 import de.gymondo.samples.restapi.transformation.TransformationsV1;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * User controller.
@@ -38,19 +39,35 @@ public class UserController {
         return transformations.user2Dto(userRepository.findAll());
     }
 
-    /*
-     * TODO: Create an endpoint to get a single user by id.
+    /**
+     * Returns user by id
      *
-     * You can ignore the fact the user doesn't exist.
+     * @param id of user
+     * @return The user
      */
+    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    public UserV1Dto getUserById(@RequestParam("id") int id) {
+        return transformations.user2Dto(userRepository.findOne(id));
+    }
 
+    /**
+     * Lists all subscriptions of user with id userId
+     * @param userId id of user
+     * @return The Subscriptions
+     */
+    @RequestMapping(value = "/subscriptions", method = RequestMethod.GET)
+    public List<SubscriptionV1Dto> getSubscriptionsOfUserId(@RequestParam("userId") int userId) {
+        return transformations.subscription2Dto(subscriptionRepository.findByUserId(userId));
+    }
 
-
-
-
-    /*
-     * TODO: Create an endpoint to get all the subscriptions of a user given its id.
+    /**
+     * Lists all subscriptions which are valid on a specified date
      *
-     * You can ignore the fact the user doesn't exist.
+     * @param date on which subscriptions should be valid. If no date is specified, defaults to LocalDate.now()
+     * @return The valid subscriptions
      */
+    @RequestMapping(value = "/validSubscriptions", method = RequestMethod.GET)
+    public List<SubscriptionV1Dto> getSubscriptionsValidOn(@RequestParam(value = "date", required = false) @DateTimeFormat(pattern = "yyyyMMdd") Optional<LocalDate> date) {
+        return transformations.subscription2Dto(subscriptionRepository.findValidOn(date.orElse(LocalDate.now())));
+    }
 }

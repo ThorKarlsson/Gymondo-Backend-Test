@@ -1,46 +1,16 @@
 ## Gymondo Backend Test
 
-You should not take more than 90 minutes to complete all the tasks.
 
-###### Problem Statement
-You are asked to extend some of the rest-api functionalities. The application right now is completely functional but we'd like to enrich the user information with:
-
-* The subscriptions that belong to the users;
-* The expiration date of each subscription.
-
-We'd also like for you to create the following endpoints:
-
-* Fetch a single user by id;
-* Fetch all the subscriptions that belong to a given user;
-* Fetch all the subscriptions where the expiration date is after a certain date.
-
-You will find more details once you get your hands in the source code.
-
-###### Objectives
-You are being tested for good practices, code cleanliness and performance.
 
 ###### Reflections
 
-* What's the problem with the GET /rest-api/api/v1/users endpoint? How can we solve it? Ignore the security topic.
-* Imagine that for some reason we decide that we no longer want to deliver the subscriptions with the user (this means removing the "subscriptions" member from the json file). What would you do to accomplish that? Why is this such an important topic?
 
-###### Installing and running
+###### What's the problem with the GET /rest-api/api/v1/users endpoint? How can we solve it? Ignore the security topic.
+	
+* The call to the subscription repository happens after retrieving the list of users. This makes it inefficient as we either have to call the subscription repository for each user or retrieve all subscriptions and query them in memory. Either way it results in an additional call to the DB which could be avoided by refactoring it into a single db call that retrieves both informations at the same time e.g. via a join in a SQL context. This way only 1 call to the db is made for the API call. 
 
-You'll need:
-* Java SDK 8
-* Git
-* Maven
-* An IDE of your choice
 
-```
-git clone https://github.com/Gymondo-git/GymondoBackendTest.git
-git checkout master
+###### Imagine that for some reason we decide that we no longer want to deliver the subscriptions with the user (this means removing the "subscriptions" member from the json file). What would you do to accomplish that? Why is this such an important topic?
+	
+* As we would be removing a field, I would version the API and make a V2 endpoint. Typically consumers should expect fields to be added so versioning would not have been required for the task at hand. However, removing fields would break the contract so a new version should be created. This is an important topic because breaking an API contract can result in unexpected consequences in any number of consumers of the API such as javascript frontends, mobile applications, or other backend applications that rely on the API. While it is possible to do a coordinated release together with a consumer, this can complicate the release process in the event that 1 of the applications needs to be rollbacked. Versioning the API allows you to be more independent and flexible in the release process.
 
-mvn clean install
-
-# To run the application:
-cd rest-api
-mvn tomcat7:run
-
-# Open a web browser and type http://localhost:8080/rest-api/api/v1/users
-```
